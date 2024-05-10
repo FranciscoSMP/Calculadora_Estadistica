@@ -9,14 +9,14 @@ def binomial_formula(n, k, p):
 
     Args:
         n (int): Número total de ensayos.
-        k (int): Número de éxitos deseados.
+        k (float): Número de éxitos deseados.
         p (float): Probabilidad de éxito en cada ensayo.
 
     Returns:
         float: Coeficiente binomial C(n, k).
         float: Probabilidad de obtener k éxitos en n ensayos.
     """
-    binomial_coefficient = math.comb(n, k)
+    binomial_coefficient = math.comb(n, int(k))
     probability = binomial_coefficient * (p ** k) * ((1 - p) ** (n - k))
     return binomial_coefficient, probability
 
@@ -88,23 +88,83 @@ def normal_standardization(x, mu, sigma):
     """
     return (x - mu) / sigma
 
+def population_infinite_std_dev(sigma, n):
+    """
+    Calcula el error estándar de la media para poblaciones infinitas.
+
+    Args:
+        sigma (float): Desviación estándar de la población.
+        n (int): Tamaño de la muestra.
+
+    Returns:
+        float: Error estándar de la media para poblaciones infinitas.
+    """
+    return sigma / math.sqrt(n)
+
+def population_finite_std_dev(sigma, N, n):
+    """
+    Calcula el error estándar de la media para poblaciones finitas.
+
+    Args:
+        sigma (float): Desviación estándar de la población.
+        N (int): Tamaño total de la población.
+        n (int): Tamaño de la muestra.
+
+    Returns:
+        float: Error estándar de la media para poblaciones finitas.
+    """
+    return sigma / math.sqrt(n) * math.sqrt((N - n) / (N - 1))
+
+def sample_mean_standardization(x_bar, mu, sigma, n):
+    """
+    Calcula la estandarización de la media de la muestra.
+
+    Args:
+        x_bar (float): Media de la muestra.
+        mu (float): Media de la población.
+        sigma (float): Desviación estándar de la población.
+        n (int): Tamaño de la muestra.
+
+    Returns:
+        float: Valor estandarizado de la media de la muestra.
+    """
+    return (x_bar - mu) / (sigma / math.sqrt(n))
+
+def finite_population_multiplier(sigma, N, n):
+    """
+    Calcula el Multiplicador de población finita.
+
+    Args:
+        sigma (float): Desviación estándar de la población.
+        N (int): Tamaño total de la población.
+        n (int): Tamaño de la muestra.
+
+    Returns:
+        float: Multiplicador de población finita.
+    """
+    return math.sqrt((N - n) / (N - 1))
+
 def main():
     while True:
         print("\nMenú:")
-        print("1. Calcular coeficiente binomial y probabilidad de la distribución binomial")
-        print("2. Calcular la media de la distribución binomial")
-        print("3. Calcular la desviación estándar de la distribución binomial")
-        print("4. Calcular probabilidad de la distribución de Poisson")
-        print("5. Calcular aproximación de distribución binomial por distribución de Poisson")
-        print("6. Calcular estandarización de una variable aleatoria normal")
-        print("7. Salir")
+        print("1. Calcular coeficiente binomial y probabilidad de la distribución binomial (cap5)")
+        print("2. Calcular la media de la distribución binomial (cap5)")
+        print("3. Calcular la desviación estándar de la distribución binomial (cap5)")
+        print("4. Calcular probabilidad de la distribución de Poisson (cap5)")
+        print("5. Calcular aproximación de distribución binomial por distribución de Poisson (cap5)")
+        print("6. Calcular estandarización de una variable aleatoria normal (cap5)")
+        print("7. Calcular Error estándar de la media para poblaciones infinitas (cap6)")
+        print("8. Calcular Error estándar de la media para poblaciones finitas (cap6)")
+        print("9. Calcular estandarización de la media de la muestra (cap6)")
+        print("10. Calcular Multiplicador de población finita (cap6)")
+        print("11. Salir")
 
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
             print("\nCálculo del coeficiente binomial y la probabilidad de la distribución binomial:")
             n = int(input("Ingrese el número total de ensayos (n): "))
-            k = int(input("Ingrese el número de éxitos deseados (k): "))
+            k = float(input("Ingrese el número de éxitos deseados (k): "))
             p = float(input("Ingrese la probabilidad de éxito en cada ensayo (p): "))
 
             binomial_coefficient, probability = binomial_formula(n, k, p)
@@ -179,6 +239,47 @@ def main():
             plt.show()
 
         elif opcion == "7":
+            print("\nCálculo del Error estándar de la media para poblaciones infinitas:")
+            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            n = int(input("Ingrese el tamaño de la muestra (n): "))
+
+            population_infinite_std_deviation = population_infinite_std_dev(sigma, n)
+
+            print(f"\nEl Error estándar de la media para poblaciones infinitas es: {population_infinite_std_deviation}")
+
+        elif opcion == "8":
+            print("\nCálculo del Error estándar de la media para poblaciones finitas:")
+            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            N = int(input("Ingrese el tamaño total de la población (N): "))
+            n = int(input("Ingrese el tamaño de la muestra (n): "))
+
+            population_finite_std_deviation = population_finite_std_dev(sigma, N, n)
+
+            print(f"\nEl Error estándar de la media para poblaciones finitas es: {population_finite_std_deviation}")
+
+        elif opcion == "9":
+            print("\nCálculo de estandarización de la media de la muestra:")
+            x_bar = float(input("Ingrese la media de la muestra (x_bar): "))
+            mu = float(input("Ingrese la media de la población (mu): "))
+            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            n = int(input("Ingrese el tamaño de la muestra (n): "))
+
+            # Calcula la estandarización de la media de la muestra
+            sample_mean_standardized_value = (x_bar - mu) / (sigma / math.sqrt(n))
+
+            print(f"\nEl valor estandarizado de la media de la muestra es: {sample_mean_standardized_value}")
+
+        elif opcion == "10":
+            print("\nCálculo del Multiplicador de población finita:")
+            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            N = int(input("Ingrese el tamaño total de la población (N): "))
+            n = int(input("Ingrese el tamaño de la muestra (n): "))
+
+            population_multiplier = finite_population_multiplier(sigma, N, n)
+
+            print(f"\nEl Multiplicador de población finita es: {population_multiplier}")
+
+        elif opcion == "11":
             print("¡Hasta luego!")
             break
 
