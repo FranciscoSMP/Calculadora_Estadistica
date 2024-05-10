@@ -29,5 +29,5 @@ def main():
     print(f"\nCoeficiente binomial C({n}, {k}): {binomial_coefficient}")
     print(f"Probabilidad de obtener {k} éxitos en {n} ensayos: {probability}")
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()
