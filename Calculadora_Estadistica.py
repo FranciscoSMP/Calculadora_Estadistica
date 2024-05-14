@@ -188,6 +188,19 @@ def sample_proportion_mean(p, n):
     """
     return p
 
+def sample_proportion_standard_error(p, n):
+    """
+    Calcula el error estándar de la proporción.
+
+    Args:
+        p (float): Proporción de la población.
+        n (int): Tamaño de la muestra.
+
+    Returns:
+        float: Error estándar de la proporción.
+    """
+    return math.sqrt(p * (1 - p) / n)
+
 def main():
     while True:
         print("\nMenú:")
@@ -203,8 +216,9 @@ def main():
         print("10. Calcular Multiplicador de población finita (cap6)")
         print("11. Calcular estimación de la desviación estándar de la población (cap7)")
         print("12. Calcular Estimación del error estándar de la media para poblaciones finitas (cap7)")
-        print("13. Calcular media de la distribución muestral de la proporción (cap7)")
-        print("14. Salir")
+        print("13. Calcular media de la distribución muestral de la proporción (cap8)")
+        print("14. Calcular error estándar de la proporción (cap8)")
+        print("15. Salir")
 
         opcion = input("Seleccione una opción: ")
 
@@ -352,6 +366,15 @@ def main():
             print(f"\nLa media de la distribución muestral de la proporción es: {sample_proportion_mean_value}")
 
         elif opcion == "14":
+            print("\nCálculo del error estándar de la proporción:")
+            p = float(input("Ingrese la proporción de la población (p): "))
+            n = int(input("Ingrese el tamaño de la muestra (n): "))
+
+            standard_error = sample_proportion_standard_error(p, n)
+
+            print(f"\nEl error estándar de la proporción es: {standard_error}")
+
+        elif opcion == "15":
             print("¡Hasta luego!")
             break
 
