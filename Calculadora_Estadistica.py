@@ -251,6 +251,27 @@ def main():
 
             print(f"\nLa desviación estándar de la distribución binomial es: {std_dev}")
 
+            # Gráfico de la curva gaussiana
+            plt.figure(figsize=(8, 6))
+            plt.title('Distribución binomial vs Distribución normal')
+            plt.xlabel('k')
+            plt.ylabel('Probabilidad')
+            plt.grid(True)
+
+            # Datos
+            k_values = np.arange(0, n + 1)
+            binomial_probabilities = [binomial_formula(n, k, p)[1] for k in k_values]
+            normal_probabilities = [poisson_probability(k, n * p) for k in k_values]
+
+            # Gráfico de barras para la distribución binomial
+            plt.bar(k_values, binomial_probabilities, alpha=0.5, label='Binomial', color='blue')
+
+            # Gráfico de la curva gaussiana para la distribución normal
+            plt.plot(k_values, normal_probabilities, color='red', label='Normal')
+
+            plt.legend()
+            plt.show()
+
         elif opcion == "4":
             print("\nCálculo de probabilidad de la distribución de Poisson:")
             k = int(input("Ingrese el número de eventos (k): "))
