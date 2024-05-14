@@ -115,6 +115,20 @@ def population_finite_std_dev(sigma, N, n):
     """
     return sigma / math.sqrt(n) * math.sqrt((N - n) / (N - 1))
 
+def finite_population_mean_std_dev_estimate(sigma, N, n):
+    """
+    Calcula la estimación del error estándar de la media para poblaciones finitas.
+
+    Args:
+        sigma (float): Desviación estándar de la población.
+        N (int): Tamaño total de la población.
+        n (int): Tamaño de la muestra.
+
+    Returns:
+        float: Estimación del error estándar de la media para poblaciones finitas.
+    """
+    return sigma / math.sqrt(n) * math.sqrt((N - n) / (N - 1))
+
 def sample_mean_standardization(x_bar, mu, sigma, n):
     """
     Calcula la estandarización de la media de la muestra.
@@ -144,6 +158,36 @@ def finite_population_multiplier(sigma, N, n):
     """
     return math.sqrt((N - n) / (N - 1))
 
+def population_std_dev_estimation(data):
+    """
+    Calcula la estimación de la desviación estándar de la población.
+
+    Args:
+        data (list): Lista de datos de la población.
+
+    Returns:
+        float: Estimación de la desviación estándar de la población.
+    """
+    n = len(data)
+    mean = sum(data) / n
+    squared_diff = [(x - mean) ** 2 for x in data]
+    variance = sum(squared_diff) / n
+    std_dev = math.sqrt(variance)
+    return std_dev
+
+def sample_proportion_mean(p, n):
+    """
+    Calcula la media de la distribución muestral de la proporción.
+
+    Args:
+        p (float): Proporción de la población.
+        n (int): Tamaño de la muestra.
+
+    Returns:
+        float: Media de la distribución muestral de la proporción.
+    """
+    return p
+
 def main():
     while True:
         print("\nMenú:")
@@ -157,7 +201,10 @@ def main():
         print("8. Calcular Error estándar de la media para poblaciones finitas (cap6)")
         print("9. Calcular estandarización de la media de la muestra (cap6)")
         print("10. Calcular Multiplicador de población finita (cap6)")
-        print("11. Salir")
+        print("11. Calcular estimación de la desviación estándar de la población (cap7)")
+        print("12. Calcular Estimación del error estándar de la media para poblaciones finitas (cap7)")
+        print("13. Calcular media de la distribución muestral de la proporción (cap7)")
+        print("14. Salir")
 
         opcion = input("Seleccione una opción: ")
 
@@ -280,6 +327,31 @@ def main():
             print(f"\nEl Multiplicador de población finita es: {population_multiplier}")
 
         elif opcion == "11":
+            print("\nCálculo de la estimación de la desviación estándar de la población:")
+            data = [float(x) for x in input("Ingrese los datos separados por espacios: ").split()]
+            population_std_dev_estimate = population_std_dev_estimation(data)
+            print(f"\nLa estimación de la desviación estándar de la población es: {population_std_dev_estimate}")
+
+        elif opcion == "12":
+            print("\nCálculo de la estimación del error estándar de la media para poblaciones finitas:")
+            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            N = int(input("Ingrese el tamaño total de la población (N): "))
+            n = int(input("Ingrese el tamaño de la muestra (n): "))
+
+            finite_population_std_dev_estimate = finite_population_mean_std_dev_estimate(sigma, N, n)
+
+            print(f"\nLa estimación del error estándar de la media para poblaciones finitas es: {finite_population_std_dev_estimate}")
+
+        elif opcion == "13":
+            print("\nCálculo de media de la distribución muestral de la proporción:")
+            p = float(input("Ingrese la proporción de la población (p): "))
+            n = int(input("Ingrese el tamaño de la muestra (n): "))
+
+            sample_proportion_mean_value = sample_proportion_mean(p, n)
+
+            print(f"\nLa media de la distribución muestral de la proporción es: {sample_proportion_mean_value}")
+
+        elif opcion == "14":
             print("¡Hasta luego!")
             break
 
