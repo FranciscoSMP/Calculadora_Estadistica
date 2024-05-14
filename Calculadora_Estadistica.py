@@ -201,6 +201,19 @@ def sample_proportion_standard_error(p, n):
     """
     return math.sqrt(p * (1 - p) / n)
 
+def population_infinite_std_dev(sigma, n):
+    """
+    Calcula el error estándar de la media para poblaciones infinitas.
+
+    Args:
+        sigma (float): Desviación estándar de la población.
+        n (int): Tamaño de la muestra.
+
+    Returns:
+        float: Error estándar de la media para poblaciones infinitas.
+    """
+    return sigma / math.sqrt(n)
+
 def main():
     while True:
         print("\nMenú:")
@@ -216,9 +229,10 @@ def main():
         print("10. Calcular Multiplicador de población finita (cap6)")
         print("11. Calcular estimación de la desviación estándar de la población (cap7)")
         print("12. Calcular Estimación del error estándar de la media para poblaciones finitas (cap7)")
-        print("13. Calcular media de la distribución muestral de la proporción (cap8)")
-        print("14. Calcular error estándar de la proporción (cap8)")
-        print("15. Salir")
+        print("13. Calcular media de la distribución muestral de la proporción (cap7)")
+        print("14. Calcular error estándar de la proporción (cap7)")
+        print("15. Calcular Error estándar estimado de la media de una población infinita (cap7)")
+        print("16. Salir")
 
         opcion = input("Seleccione una opción: ")
 
@@ -396,6 +410,15 @@ def main():
             print(f"\nEl error estándar de la proporción es: {standard_error}")
 
         elif opcion == "15":
+            print("\nCálculo del error estándar estimado de la media de una población infinita:")
+            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            n = int(input("Ingrese el tamaño de la muestra (n): "))
+
+            standard_error_population_infinite = population_infinite_std_dev(sigma, n)
+
+            print(f"\nEl error estándar estimado de la media de una población infinita es: {standard_error_population_infinite}")
+
+        elif opcion == "16":
             print("¡Hasta luego!")
             break
 
