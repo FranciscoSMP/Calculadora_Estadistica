@@ -1,429 +1,282 @@
-import math
+import tkinter as tk
+from tkinter import ttk, messagebox, simpledialog
 import matplotlib.pyplot as plt
 import numpy as np
+import math
+
+class CalculatorApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Calculator App")
+
+        self.main_frame = ttk.Frame(self.root, padding="20")
+        self.main_frame.grid(row=0, column=0)
+
+        self.create_menu()
+
+    def create_menu(self):
+        ttk.Label(self.main_frame, text="Seleccione una opción:").grid(row=0, column=0, columnspan=2)
+
+        options = [
+            "Calcular coeficiente binomial y probabilidad",
+            "Calcular media de distribución binomial",
+            "Calcular desviación estándar de distribución binomial",
+            "Calcular probabilidad de distribución de Poisson",
+            "Calcular aproximación binomial por Poisson",
+            "Calcular estandarización de variable aleatoria normal",
+            "Calcular error estándar para poblaciones infinitas",
+            "Calcular error estándar para poblaciones finitas",
+            "Calcular estandarización de media de la muestra",
+            "Calcular multiplicador de población finita",
+            "Calcular estimación de desviación estándar de población",
+            "Calcular estimación de error estándar para poblaciones finitas",
+            "Calcular media de distribución muestral de la proporción",
+            "Calcular error estándar de la proporción",
+            "Calcular error estándar estimado de la media de una población infinita",
+            "Salir"
+        ]
+
+        self.option_var = tk.StringVar()
+        self.option_var.set(options[0])
+
+        self.option_menu = ttk.OptionMenu(self.main_frame, self.option_var, options[0], *options)
+        self.option_menu.grid(row=1, column=0, columnspan=2, pady=10)
+
+        ttk.Button(self.main_frame, text="Calcular", command=self.calculate).grid(row=2, column=0, columnspan=2, pady=10)
+
+    def calculate(self):
+        option = self.option_var.get()
+        if option == "Salir":
+            self.root.destroy()
+        elif option == "Calcular coeficiente binomial y probabilidad":
+            self.calculate_binomial_coefficient_and_probability()
+        elif option == "Calcular media de distribución binomial":
+            self.calculate_binomial_mean()
+        elif option == "Calcular desviación estándar de distribución binomial":
+            self.calculate_binomial_std_dev()
+        elif option == "Calcular probabilidad de distribución de Poisson":
+            self.calculate_poisson_probability()
+        elif option == "Calcular aproximación binomial por Poisson":
+            self.calculate_poisson_approximation()
+        elif option == "Calcular estandarización de variable aleatoria normal":
+            self.calculate_normal_standardization()
+        elif option == "Calcular error estándar para poblaciones infinitas":
+            self.calculate_population_infinite_std_dev()
+        elif option == "Calcular error estándar para poblaciones finitas":
+            self.calculate_population_finite_std_dev()
+        elif option == "Calcular estandarización de media de la muestra":
+            self.calculate_sample_mean_standardization()
+        elif option == "Calcular multiplicador de población finita":
+            self.calculate_finite_population_multiplier()
+        elif option == "Calcular estimación de desviación estándar de población":
+            self.calculate_population_std_dev_estimation()
+        elif option == "Calcular estimación de error estándar para poblaciones finitas":
+            self.calculate_finite_population_mean_std_dev_estimate()
+        elif option == "Calcular media de distribución muestral de la proporción":
+            self.calculate_sample_proportion_mean()
+        elif option == "Calcular error estándar de la proporción":
+            self.calculate_sample_proportion_standard_error()
+        elif option == "Calcular error estándar estimado de la media de una población infinita":
+            self.calculate_population_infinite_std_dev()
+        else:
+            messagebox.showerror("Error", "Opción no implementada aún")
+
+    def calculate_binomial_coefficient_and_probability(self):
+        n = int(self.get_input("Ingrese el número total de ensayos (n):"))
+        k = float(self.get_input("Ingrese el número de éxitos deseados (k):"))
+        p = float(self.get_input("Ingrese la probabilidad de éxito en cada ensayo (p):"))
+
+        binomial_coefficient, probability = binomial_formula(n, k, p)
+
+        messagebox.showinfo("Resultado", f"Coeficiente binomial C({n}, {k}): {binomial_coefficient}\n"
+                                          f"Probabilidad de obtener {k} éxitos en {n} ensayos: {probability}")
+
+    def calculate_binomial_mean(self):
+        n = int(self.get_input("Ingrese el número total de ensayos (n):"))
+        p = float(self.get_input("Ingrese la probabilidad de éxito en cada ensayo (p):"))
+
+        mean = binomial_mean(n, p)
+
+        messagebox.showinfo("Resultado", f"La media de la distribución binomial es: {mean}")
+
+    def calculate_binomial_std_dev(self):
+        n = int(self.get_input("Ingrese el número total de ensayos (n):"))
+        p = float(self.get_input("Ingrese la probabilidad de éxito en cada ensayo (p):"))
+
+        std_dev = binomial_std_dev(n, p)
+
+        # Graficar la curva gaussiana
+        plt.figure(figsize=(8, 6))
+        plt.title('Distribución binomial vs Distribución normal')
+        plt.xlabel('k')
+        plt.ylabel('Probabilidad')
+        plt.grid(True)
+
+        # Datos
+        k_values = np.arange(0, n + 1)
+        binomial_probabilities = [binomial_formula(n, k, p)[1] for k in k_values]
+        normal_probabilities = [normal_distribution(k, binomial_mean(n, p), binomial_std_dev(n, p)) for k in k_values]
+
+        # Gráfico de barras para la distribución binomial
+        plt.bar(k_values, binomial_probabilities, alpha=0.5, label='Binomial', color='blue')
+
+        # Gráfico de la curva gaussiana para la distribución normal
+        plt.plot(k_values, normal_probabilities, color='red', label='Normal')
+
+        plt.legend()
+        plt.show()
+
+        messagebox.showinfo("Resultado", f"La desviación estándar de la distribución binomial es: {std_dev}")
+
+    def calculate_poisson_probability(self):
+        k = int(self.get_input("Ingrese el número de eventos (k):"))
+        lambd = float(self.get_input("Ingrese la tasa de eventos por unidad de tiempo (lambda):"))
+
+        probability = poisson_probability(k, lambd)
+
+        messagebox.showinfo("Resultado", f"La probabilidad de la distribución de Poisson para {k} eventos es: {probability}")
+        
+    def calculate_poisson_approximation(self):
+        n = int(self.get_input("Ingrese el número total de ensayos (n):"))
+        p = float(self.get_input("Ingrese la probabilidad de éxito en cada ensayo (p):"))
+        k = int(self.get_input("Ingrese el número de éxitos deseados (k):"))
+
+        approximation = poisson_approximation(n, p, k)
+
+        messagebox.showinfo("Resultado", f"La aproximación de distribución binomial por distribución de Poisson es: {approximation}")
+
+    def calculate_normal_standardization(self):
+        x = float(self.get_input("Ingrese el valor de la variable aleatoria (x):"))
+        mu = float(self.get_input("Ingrese la media de la distribución normal (mu):"))
+        sigma = float(self.get_input("Ingrese la desviación estándar de la distribución normal (sigma):"))
+
+        standardized_value = normal_standardization(x, mu, sigma)
+
+        messagebox.showinfo("Resultado", f"El valor estandarizado es: {standardized_value}")
+
+    def calculate_population_infinite_std_dev(self):
+        n = int(self.get_input("Ingrese el tamaño de la muestra (n):"))
+        sigma = float(self.get_input("Ingrese la desviación estándar de la población (sigma):"))
+
+        std_dev = population_infinite_std_dev(n, sigma)
+
+        messagebox.showinfo("Resultado", f"El error estándar para poblaciones infinitas es: {std_dev}")
+
+    def calculate_population_finite_std_dev(self):
+        n = int(self.get_input("Ingrese el tamaño de la muestra (n):"))
+        N = int(self.get_input("Ingrese el tamaño de la población (N):"))
+        sigma = float(self.get_input("Ingrese la desviación estándar de la población (sigma):"))
+
+        std_dev = population_finite_std_dev(n, N, sigma)
+
+        messagebox.showinfo("Resultado", f"El error estándar para poblaciones finitas es: {std_dev}")
+
+    def calculate_sample_mean_standardization(self):
+        x_bar = float(self.get_input("Ingrese la media de la muestra (x_bar):"))
+        mu = float(self.get_input("Ingrese la media poblacional (mu):"))
+        sigma = float(self.get_input("Ingrese la desviación estándar de la muestra (sigma):"))
+        n = int(self.get_input("Ingrese el tamaño de la muestra (n):"))
+
+        standardized_value = sample_mean_standardization(x_bar, mu, sigma, n)
+
+        messagebox.showinfo("Resultado", f"La estandarización de la media de la muestra es: {standardized_value}")
+
+    def calculate_finite_population_multiplier(self):
+        N = int(self.get_input("Ingrese el tamaño de la población (N):"))
+        n = int(self.get_input("Ingrese el tamaño de la muestra (n):"))
+
+        multiplier = finite_population_multiplier(N, n)
+
+        messagebox.showinfo("Resultado", f"El multiplicador de población finita es: {multiplier}")
+
+    def calculate_population_std_dev_estimation(self):
+        sigma = float(self.get_input("Ingrese la desviación estándar de la población (sigma):"))
+        n = int(self.get_input("Ingrese el tamaño de la muestra (n):"))
+
+        std_dev_estimation = population_std_dev_estimation(sigma, n)
+
+        messagebox.showinfo("Resultado", f"La estimación de la desviación estándar poblacional es: {std_dev_estimation}")
+
+    def calculate_finite_population_mean_std_dev_estimate(self):
+        sigma = float(self.get_input("Ingrese la desviación estándar de la población (sigma):"))
+        N = int(self.get_input("Ingrese el tamaño de la población (N):"))
+        n = int(self.get_input("Ingrese el tamaño de la muestra (n):"))
+
+        std_dev_estimate = finite_population_mean_std_dev_estimate(sigma, N, n)
+
+        messagebox.showinfo("Resultado", f"La estimación del error estándar para poblaciones finitas es: {std_dev_estimate}")
+
+    def calculate_sample_proportion_mean(self):
+        p = float(self.get_input("Ingrese la proporción de éxito de la muestra (p):"))
+        n = int(self.get_input("Ingrese el tamaño de la muestra (n):"))
+
+        mean = sample_proportion_mean(p, n)
+
+        messagebox.showinfo("Resultado", f"La media de la distribución muestral de la proporción es: {mean}")
+
+    def calculate_sample_proportion_standard_error(self):
+        p = float(self.get_input("Ingrese la proporción de éxito de la muestra (p):"))
+        n = int(self.get_input("Ingrese el tamaño de la muestra (n):"))
+
+        std_error = sample_proportion_standard_error(p, n)
+
+        messagebox.showinfo("Resultado", f"El error estándar de la proporción es: {std_error}")
+
+    def get_input(self, message):
+        return simpledialog.askstring("Input", message)
 
 def binomial_formula(n, k, p):
-    """
-    Calcula el coeficiente binomial C(n, k) y la probabilidad de obtener k éxitos en n ensayos
-    con una probabilidad de éxito p en cada ensayo.
-
-    Args:
-        n (int): Número total de ensayos.
-        k (float): Número de éxitos deseados.
-        p (float): Probabilidad de éxito en cada ensayo.
-
-    Returns:
-        float: Coeficiente binomial C(n, k).
-        float: Probabilidad de obtener k éxitos en n ensayos.
-    """
-    binomial_coefficient = math.comb(n, int(k))
+    binomial_coefficient = math.comb(n, k)
     probability = binomial_coefficient * (p ** k) * ((1 - p) ** (n - k))
     return binomial_coefficient, probability
 
 def binomial_mean(n, p):
-    """
-    Calcula la media de una distribución binomial.
-
-    Args:
-        n (int): Número total de ensayos.
-        p (float): Probabilidad de éxito en cada ensayo.
-
-    Returns:
-        float: Media de la distribución binomial.
-    """
     return n * p
 
 def binomial_std_dev(n, p):
-    """
-    Calcula la desviación estándar de una distribución binomial.
-
-    Args:
-        n (int): Número total de ensayos.
-        p (float): Probabilidad de éxito en cada ensayo.
-
-    Returns:
-        float: Desviación estándar de la distribución binomial.
-    """
     return math.sqrt(n * p * (1 - p))
 
 def poisson_probability(k, lambd):
-    """
-    Calcula la probabilidad de la distribución de Poisson.
-
-    Args:
-        k (int): Número de eventos.
-        lambd (float): Tasa de eventos por unidad de tiempo.
-
-    Returns:
-        float: Probabilidad de la distribución de Poisson.
-    """
     return (lambd ** k) * math.exp(-lambd) / math.factorial(k)
 
 def poisson_approximation(n, p, k):
-    """
-    Calcula la aproximación de la distribución binomial por la distribución de Poisson.
-
-    Args:
-        n (int): Número total de ensayos.
-        p (float): Probabilidad de éxito en cada ensayo.
-        k (int): Número de éxitos deseados.
-
-    Returns:
-        float: Probabilidad aproximada de la distribución binomial por la distribución de Poisson.
-    """
     lambd = n * p
     return poisson_probability(k, lambd)
 
 def normal_standardization(x, mu, sigma):
-    """
-    Calcula la estandarización de una variable aleatoria normal.
-
-    Args:
-        x (float): Valor de la variable aleatoria.
-        mu (float): Media de la distribución normal.
-        sigma (float): Desviación estándar de la distribución normal.
-
-    Returns:
-        float: Valor estandarizado de la variable aleatoria.
-    """
     return (x - mu) / sigma
 
-def population_infinite_std_dev(sigma, n):
-    """
-    Calcula el error estándar de la media para poblaciones infinitas.
-
-    Args:
-        sigma (float): Desviación estándar de la población.
-        n (int): Tamaño de la muestra.
-
-    Returns:
-        float: Error estándar de la media para poblaciones infinitas.
-    """
+def population_infinite_std_dev(n, sigma):
     return sigma / math.sqrt(n)
 
-def population_finite_std_dev(sigma, N, n):
-    """
-    Calcula el error estándar de la media para poblaciones finitas.
-
-    Args:
-        sigma (float): Desviación estándar de la población.
-        N (int): Tamaño total de la población.
-        n (int): Tamaño de la muestra.
-
-    Returns:
-        float: Error estándar de la media para poblaciones finitas.
-    """
-    return sigma / math.sqrt(n) * math.sqrt((N - n) / (N - 1))
-
-def finite_population_mean_std_dev_estimate(sigma, N, n):
-    """
-    Calcula la estimación del error estándar de la media para poblaciones finitas.
-
-    Args:
-        sigma (float): Desviación estándar de la población.
-        N (int): Tamaño total de la población.
-        n (int): Tamaño de la muestra.
-
-    Returns:
-        float: Estimación del error estándar de la media para poblaciones finitas.
-    """
-    return sigma / math.sqrt(n) * math.sqrt((N - n) / (N - 1))
+def population_finite_std_dev(n, N, sigma):
+    return sigma * math.sqrt((N - n) / (N - 1)) / math.sqrt(n)
 
 def sample_mean_standardization(x_bar, mu, sigma, n):
-    """
-    Calcula la estandarización de la media de la muestra.
-
-    Args:
-        x_bar (float): Media de la muestra.
-        mu (float): Media de la población.
-        sigma (float): Desviación estándar de la población.
-        n (int): Tamaño de la muestra.
-
-    Returns:
-        float: Valor estandarizado de la media de la muestra.
-    """
     return (x_bar - mu) / (sigma / math.sqrt(n))
 
-def finite_population_multiplier(sigma, N, n):
-    """
-    Calcula el Multiplicador de población finita.
-
-    Args:
-        sigma (float): Desviación estándar de la población.
-        N (int): Tamaño total de la población.
-        n (int): Tamaño de la muestra.
-
-    Returns:
-        float: Multiplicador de población finita.
-    """
+def finite_population_multiplier(N, n):
     return math.sqrt((N - n) / (N - 1))
 
-def population_std_dev_estimation(data):
-    """
-    Calcula la estimación de la desviación estándar de la población.
+def population_std_dev_estimation(sigma, n):
+    return sigma / math.sqrt(n)
 
-    Args:
-        data (list): Lista de datos de la población.
-
-    Returns:
-        float: Estimación de la desviación estándar de la población.
-    """
-    n = len(data)
-    mean = sum(data) / n
-    squared_diff = [(x - mean) ** 2 for x in data]
-    variance = sum(squared_diff) / n
-    std_dev = math.sqrt(variance)
-    return std_dev
+def finite_population_mean_std_dev_estimate(sigma, N, n):
+    return sigma * math.sqrt((N - n) / (N * n))
 
 def sample_proportion_mean(p, n):
-    """
-    Calcula la media de la distribución muestral de la proporción.
-
-    Args:
-        p (float): Proporción de la población.
-        n (int): Tamaño de la muestra.
-
-    Returns:
-        float: Media de la distribución muestral de la proporción.
-    """
     return p
 
 def sample_proportion_standard_error(p, n):
-    """
-    Calcula el error estándar de la proporción.
+    return math.sqrt((p * (1 - p)) / n)
 
-    Args:
-        p (float): Proporción de la población.
-        n (int): Tamaño de la muestra.
-
-    Returns:
-        float: Error estándar de la proporción.
-    """
-    return math.sqrt(p * (1 - p) / n)
-
-def population_infinite_std_dev(sigma, n):
-    """
-    Calcula el error estándar de la media para poblaciones infinitas.
-
-    Args:
-        sigma (float): Desviación estándar de la población.
-        n (int): Tamaño de la muestra.
-
-    Returns:
-        float: Error estándar de la media para poblaciones infinitas.
-    """
-    return sigma / math.sqrt(n)
+def normal_distribution(x, mu, sigma):
+    return (1 / (sigma * np.sqrt(2 * np.pi))) * np.exp(-((x - mu) ** 2) / (2 * sigma ** 2))
 
 def main():
-    while True:
-        print("\nMenú:")
-        print("1. Calcular coeficiente binomial y probabilidad de la distribución binomial (cap5)")
-        print("2. Calcular la media de la distribución binomial (cap5)")
-        print("3. Calcular la desviación estándar de la distribución binomial (cap5)")
-        print("4. Calcular probabilidad de la distribución de Poisson (cap5)")
-        print("5. Calcular aproximación de distribución binomial por distribución de Poisson (cap5)")
-        print("6. Calcular estandarización de una variable aleatoria normal (cap5)")
-        print("7. Calcular Error estándar de la media para poblaciones infinitas (cap6)")
-        print("8. Calcular Error estándar de la media para poblaciones finitas (cap6)")
-        print("9. Calcular estandarización de la media de la muestra (cap6)")
-        print("10. Calcular Multiplicador de población finita (cap6)")
-        print("11. Calcular estimación de la desviación estándar de la población (cap7)")
-        print("12. Calcular Estimación del error estándar de la media para poblaciones finitas (cap7)")
-        print("13. Calcular media de la distribución muestral de la proporción (cap7)")
-        print("14. Calcular error estándar de la proporción (cap7)")
-        print("15. Calcular Error estándar estimado de la media de una población infinita (cap7)")
-        print("16. Salir")
-
-        opcion = input("Seleccione una opción: ")
-
-        if opcion == "1":
-            print("\nCálculo del coeficiente binomial y la probabilidad de la distribución binomial:")
-            n = int(input("Ingrese el número total de ensayos (n): "))
-            k = float(input("Ingrese el número de éxitos deseados (k): "))
-            p = float(input("Ingrese la probabilidad de éxito en cada ensayo (p): "))
-
-            binomial_coefficient, probability = binomial_formula(n, k, p)
-
-            print(f"\nCoeficiente binomial C({n}, {k}): {binomial_coefficient}")
-            print(f"Probabilidad de obtener {k} éxitos en {n} ensayos: {probability}")
-
-        elif opcion == "2":
-            print("\nCálculo de la media de la distribución binomial:")
-            n = int(input("Ingrese el número total de ensayos (n): "))
-            p = float(input("Ingrese la probabilidad de éxito en cada ensayo (p): "))
-
-            mean = binomial_mean(n, p)
-
-            print(f"\nLa media de la distribución binomial es: {mean}")
-
-        elif opcion == "3":
-            print("\nCálculo de la desviación estándar de la distribución binomial:")
-            n = int(input("Ingrese el número total de ensayos (n): "))
-            p = float(input("Ingrese la probabilidad de éxito en cada ensayo (p): "))
-
-            std_dev = binomial_std_dev(n, p)
-
-            print(f"\nLa desviación estándar de la distribución binomial es: {std_dev}")
-
-            # Gráfico de la curva gaussiana
-            plt.figure(figsize=(8, 6))
-            plt.title('Distribución binomial vs Distribución normal')
-            plt.xlabel('k')
-            plt.ylabel('Probabilidad')
-            plt.grid(True)
-
-            # Datos
-            k_values = np.arange(0, n + 1)
-            binomial_probabilities = [binomial_formula(n, k, p)[1] for k in k_values]
-            normal_probabilities = [poisson_probability(k, n * p) for k in k_values]
-
-            # Gráfico de barras para la distribución binomial
-            plt.bar(k_values, binomial_probabilities, alpha=0.5, label='Binomial', color='blue')
-
-            # Gráfico de la curva gaussiana para la distribución normal
-            plt.plot(k_values, normal_probabilities, color='red', label='Normal')
-
-            plt.legend()
-            plt.show()
-
-        elif opcion == "4":
-            print("\nCálculo de probabilidad de la distribución de Poisson:")
-            k = int(input("Ingrese el número de eventos (k): "))
-            lambd = float(input("Ingrese la tasa de eventos por unidad de tiempo (lambda): "))
-
-            probability = poisson_probability(k, lambd)
-
-            print(f"\nLa probabilidad de la distribución de Poisson para {k} eventos es: {probability}")
-
-        elif opcion == "5":
-            print("\nCálculo de aproximación de distribución binomial por distribución de Poisson:")
-            n = int(input("Ingrese el número total de ensayos (n): "))
-            p = float(input("Ingrese la probabilidad de éxito en cada ensayo (p): "))
-            k = int(input("Ingrese el número de éxitos deseados (k): "))
-
-            approximation = poisson_approximation(n, p, k)
-
-            print(f"\nLa aproximación de distribución binomial por distribución de Poisson es: {approximation}")
-
-        elif opcion == "6":
-            print("\nCálculo de estandarización de una variable aleatoria normal:")
-            x = float(input("Ingrese el valor de la variable aleatoria (x): "))
-            mu = float(input("Ingrese la media de la distribución normal (mu): "))
-            sigma = float(input("Ingrese la desviación estándar de la distribución normal (sigma): "))
-
-            standardized_value = normal_standardization(x, mu, sigma)
-
-            print(f"\nEl valor estandarizado de la variable aleatoria es: {standardized_value}")
-
-            # Gráfico
-            plt.figure(figsize=(8, 6))
-            plt.title('Estandarización de una variable aleatoria normal')
-            plt.xlabel('x')
-            plt.ylabel('z')
-            plt.grid(True)
-
-            # Datos
-            x_values = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
-            z_values = [(x_i - mu) / sigma for x_i in x_values]
-
-            # Gráfico
-            plt.plot(x_values, z_values, label='Estandarización')
-            plt.scatter(x, standardized_value, color='red', label=f'x={x}, z={standardized_value}')
-            plt.axhline(0, color='black', linestyle='--')
-            plt.axvline(mu, color='black', linestyle='--', label='Media')
-            plt.legend()
-            plt.show()
-
-        elif opcion == "7":
-            print("\nCálculo del Error estándar de la media para poblaciones infinitas:")
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
-            n = int(input("Ingrese el tamaño de la muestra (n): "))
-
-            population_infinite_std_deviation = population_infinite_std_dev(sigma, n)
-
-            print(f"\nEl Error estándar de la media para poblaciones infinitas es: {population_infinite_std_deviation}")
-
-        elif opcion == "8":
-            print("\nCálculo del Error estándar de la media para poblaciones finitas:")
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
-            N = int(input("Ingrese el tamaño total de la población (N): "))
-            n = int(input("Ingrese el tamaño de la muestra (n): "))
-
-            population_finite_std_deviation = population_finite_std_dev(sigma, N, n)
-
-            print(f"\nEl Error estándar de la media para poblaciones finitas es: {population_finite_std_deviation}")
-
-        elif opcion == "9":
-            print("\nCálculo de estandarización de la media de la muestra:")
-            x_bar = float(input("Ingrese la media de la muestra (x_bar): "))
-            mu = float(input("Ingrese la media de la población (mu): "))
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
-            n = int(input("Ingrese el tamaño de la muestra (n): "))
-
-            # Calcula la estandarización de la media de la muestra
-            sample_mean_standardized_value = (x_bar - mu) / (sigma / math.sqrt(n))
-
-            print(f"\nEl valor estandarizado de la media de la muestra es: {sample_mean_standardized_value}")
-
-        elif opcion == "10":
-            print("\nCálculo del Multiplicador de población finita:")
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
-            N = int(input("Ingrese el tamaño total de la población (N): "))
-            n = int(input("Ingrese el tamaño de la muestra (n): "))
-
-            population_multiplier = finite_population_multiplier(sigma, N, n)
-
-            print(f"\nEl Multiplicador de población finita es: {population_multiplier}")
-
-        elif opcion == "11":
-            print("\nCálculo de la estimación de la desviación estándar de la población:")
-            data = [float(x) for x in input("Ingrese los datos separados por espacios: ").split()]
-            population_std_dev_estimate = population_std_dev_estimation(data)
-            print(f"\nLa estimación de la desviación estándar de la población es: {population_std_dev_estimate}")
-
-        elif opcion == "12":
-            print("\nCálculo de la estimación del error estándar de la media para poblaciones finitas:")
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
-            N = int(input("Ingrese el tamaño total de la población (N): "))
-            n = int(input("Ingrese el tamaño de la muestra (n): "))
-
-            finite_population_std_dev_estimate = finite_population_mean_std_dev_estimate(sigma, N, n)
-
-            print(f"\nLa estimación del error estándar de la media para poblaciones finitas es: {finite_population_std_dev_estimate}")
-
-        elif opcion == "13":
-            print("\nCálculo de media de la distribución muestral de la proporción:")
-            p = float(input("Ingrese la proporción de la población (p): "))
-            n = int(input("Ingrese el tamaño de la muestra (n): "))
-
-            sample_proportion_mean_value = sample_proportion_mean(p, n)
-
-            print(f"\nLa media de la distribución muestral de la proporción es: {sample_proportion_mean_value}")
-
-        elif opcion == "14":
-            print("\nCálculo del error estándar de la proporción:")
-            p = float(input("Ingrese la proporción de la población (p): "))
-            n = int(input("Ingrese el tamaño de la muestra (n): "))
-
-            standard_error = sample_proportion_standard_error(p, n)
-
-            print(f"\nEl error estándar de la proporción es: {standard_error}")
-
-        elif opcion == "15":
-            print("\nCálculo del error estándar estimado de la media de una población infinita:")
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
-            n = int(input("Ingrese el tamaño de la muestra (n): "))
-
-            standard_error_population_infinite = population_infinite_std_dev(sigma, n)
-
-            print(f"\nEl error estándar estimado de la media de una población infinita es: {standard_error_population_infinite}")
-
-        elif opcion == "16":
-            print("¡Hasta luego!")
-            break
-
-        else:
-            print("Opción inválida. Por favor, seleccione una opción válida.")
+    root = tk.Tk()
+    app = CalculatorApp(root)
+    root.mainloop()
 
 if __name__ == "__main__":
     main()
