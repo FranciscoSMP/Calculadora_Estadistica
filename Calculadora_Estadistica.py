@@ -1,6 +1,7 @@
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import norm
 
 def binomial_formula(n, k, p):
     """
@@ -265,140 +266,116 @@ def main():
 
             print(f"\nLa desviación estándar de la distribución binomial es: {std_dev}")
 
-            # Gráfico de la curva gaussiana
-            plt.figure(figsize=(8, 6))
-            plt.title('Distribución binomial vs Distribución normal')
-            plt.xlabel('k')
-            plt.ylabel('Probabilidad')
-            plt.grid(True)
-
-            # Datos
-            k_values = np.arange(0, n + 1)
-            binomial_probabilities = [binomial_formula(n, k, p)[1] for k in k_values]
-            normal_probabilities = [poisson_probability(k, n * p) for k in k_values]
-
-            # Gráfico de barras para la distribución binomial
-            plt.bar(k_values, binomial_probabilities, alpha=0.5, label='Binomial', color='blue')
-
-            # Gráfico de la curva gaussiana para la distribución normal
-            plt.plot(k_values, normal_probabilities, color='red', label='Normal')
-
-            plt.legend()
-            plt.show()
-
         elif opcion == "4":
-            print("\nCálculo de probabilidad de la distribución de Poisson:")
+            print("\nCálculo de la probabilidad de la distribución de Poisson:")
             k = int(input("Ingrese el número de eventos (k): "))
-            lambd = float(input("Ingrese la tasa de eventos por unidad de tiempo (lambda): "))
+            lambd = float(input("Ingrese la tasa de eventos por unidad de tiempo (λ): "))
 
             probability = poisson_probability(k, lambd)
 
-            print(f"\nLa probabilidad de la distribución de Poisson para {k} eventos es: {probability}")
+            print(f"\nLa probabilidad de obtener {k} eventos en una distribución de Poisson con λ={lambd} es: {probability}")
 
         elif opcion == "5":
-            print("\nCálculo de aproximación de distribución binomial por distribución de Poisson:")
+            print("\nCálculo de la aproximación de la distribución binomial por la distribución de Poisson:")
             n = int(input("Ingrese el número total de ensayos (n): "))
             p = float(input("Ingrese la probabilidad de éxito en cada ensayo (p): "))
             k = int(input("Ingrese el número de éxitos deseados (k): "))
 
             approximation = poisson_approximation(n, p, k)
 
-            print(f"\nLa aproximación de distribución binomial por distribución de Poisson es: {approximation}")
+            print(f"\nLa aproximación de la distribución binomial por la distribución de Poisson para {k} éxitos en {n} ensayos con p={p} es: {approximation}")
 
         elif opcion == "6":
-            print("\nCálculo de estandarización de una variable aleatoria normal:")
+            print("\nCálculo de la estandarización de una variable aleatoria normal:")
             x = float(input("Ingrese el valor de la variable aleatoria (x): "))
-            mu = float(input("Ingrese la media de la distribución normal (mu): "))
-            sigma = float(input("Ingrese la desviación estándar de la distribución normal (sigma): "))
+            mu = float(input("Ingrese la media de la distribución normal (μ): "))
+            sigma = float(input("Ingrese la desviación estándar de la distribución normal (σ): "))
 
-            standardized_value = normal_standardization(x, mu, sigma)
+            z = normal_standardization(x, mu, sigma)
 
-            print(f"\nEl valor estandarizado de la variable aleatoria es: {standardized_value}")
+            print(f"\nEl valor estandarizado (z) de la variable aleatoria es: {z}")
 
-            # Gráfico
-            plt.figure(figsize=(8, 6))
-            plt.title('Estandarización de una variable aleatoria normal')
-            plt.xlabel('x')
-            plt.ylabel('z')
-            plt.grid(True)
+            # Gráfica de la curva normal estándar con el valor z sombreado
+            x_values = np.linspace(-4, 4, 1000)
+            y_values = norm.pdf(x_values, 0, 1)
 
-            # Datos
-            x_values = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
-            z_values = [(x_i - mu) / sigma for x_i in x_values]
-
-            # Gráfico
-            plt.plot(x_values, z_values, label='Estandarización')
-            plt.scatter(x, standardized_value, color='red', label=f'x={x}, z={standardized_value}')
-            plt.axhline(0, color='black', linestyle='--')
-            plt.axvline(mu, color='black', linestyle='--', label='Media')
+            plt.plot(x_values, y_values, label='Curva Normal Estándar')
+            plt.fill_between(x_values, y_values, where=(x_values <= z), color='gray', alpha=0.5, label=f'Área hasta z = {z}')
+            plt.axvline(x=z, color='red', linestyle='--', label=f'z = {z}')
+            plt.title('Curva Normal Estándar')
+            plt.xlabel('z')
+            plt.ylabel('Densidad de Probabilidad')
             plt.legend()
+            plt.grid(True)
             plt.show()
 
         elif opcion == "7":
-            print("\nCálculo del Error estándar de la media para poblaciones infinitas:")
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            print("\nCálculo del error estándar de la media para poblaciones infinitas:")
+            sigma = float(input("Ingrese la desviación estándar de la población (σ): "))
             n = int(input("Ingrese el tamaño de la muestra (n): "))
 
-            population_infinite_std_deviation = population_infinite_std_dev(sigma, n)
+            standard_error = population_infinite_std_dev(sigma, n)
 
-            print(f"\nEl Error estándar de la media para poblaciones infinitas es: {population_infinite_std_deviation}")
+            print(f"\nEl error estándar de la media para poblaciones infinitas es: {standard_error}")
 
         elif opcion == "8":
-            print("\nCálculo del Error estándar de la media para poblaciones finitas:")
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            print("\nCálculo del error estándar de la media para poblaciones finitas:")
+            sigma = float(input("Ingrese la desviación estándar de la población (σ): "))
             N = int(input("Ingrese el tamaño total de la población (N): "))
             n = int(input("Ingrese el tamaño de la muestra (n): "))
 
-            population_finite_std_deviation = population_finite_std_dev(sigma, N, n)
+            standard_error = population_finite_std_dev(sigma, N, n)
 
-            print(f"\nEl Error estándar de la media para poblaciones finitas es: {population_finite_std_deviation}")
+            print(f"\nEl error estándar de la media para poblaciones finitas es: {standard_error}")
 
         elif opcion == "9":
-            print("\nCálculo de estandarización de la media de la muestra:")
-            x_bar = float(input("Ingrese la media de la muestra (x_bar): "))
-            mu = float(input("Ingrese la media de la población (mu): "))
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            print("\nCálculo de la estandarización de la media de la muestra:")
+            x_bar = float(input("Ingrese la media de la muestra (x̄): "))
+            mu = float(input("Ingrese la media de la población (μ): "))
+            sigma = float(input("Ingrese la desviación estándar de la población (σ): "))
             n = int(input("Ingrese el tamaño de la muestra (n): "))
 
-            # Calcula la estandarización de la media de la muestra
-            sample_mean_standardized_value = (x_bar - mu) / (sigma / math.sqrt(n))
+            z = sample_mean_standardization(x_bar, mu, sigma, n)
 
-            print(f"\nEl valor estandarizado de la media de la muestra es: {sample_mean_standardized_value}")
+            print(f"\nEl valor estandarizado (z) de la media de la muestra es: {z}")
 
         elif opcion == "10":
-            print("\nCálculo del Multiplicador de población finita:")
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            print("\nCálculo del multiplicador de población finita:")
+            sigma = float(input("Ingrese la desviación estándar de la población (σ): "))
             N = int(input("Ingrese el tamaño total de la población (N): "))
             n = int(input("Ingrese el tamaño de la muestra (n): "))
 
-            population_multiplier = finite_population_multiplier(sigma, N, n)
+            multiplier = finite_population_multiplier(sigma, N, n)
 
-            print(f"\nEl Multiplicador de población finita es: {population_multiplier}")
+            print(f"\nEl multiplicador de población finita es: {multiplier}")
 
         elif opcion == "11":
             print("\nCálculo de la estimación de la desviación estándar de la población:")
-            data = [float(x) for x in input("Ingrese los datos separados por espacios: ").split()]
-            population_std_dev_estimate = population_std_dev_estimation(data)
-            print(f"\nLa estimación de la desviación estándar de la población es: {population_std_dev_estimate}")
+            data = input("Ingrese los datos de la población separados por comas: ")
+            data = [float(x) for x in data.split(",")]
+
+            std_dev_estimate = population_std_dev_estimation(data)
+
+            print(f"\nLa estimación de la desviación estándar de la población es: {std_dev_estimate}")
 
         elif opcion == "12":
             print("\nCálculo de la estimación del error estándar de la media para poblaciones finitas:")
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            sigma = float(input("Ingrese la desviación estándar de la población (σ): "))
             N = int(input("Ingrese el tamaño total de la población (N): "))
             n = int(input("Ingrese el tamaño de la muestra (n): "))
 
-            finite_population_std_dev_estimate = finite_population_mean_std_dev_estimate(sigma, N, n)
+            std_dev_estimate = finite_population_mean_std_dev_estimate(sigma, N, n)
 
-            print(f"\nLa estimación del error estándar de la media para poblaciones finitas es: {finite_population_std_dev_estimate}")
+            print(f"\nLa estimación del error estándar de la media para poblaciones finitas es: {std_dev_estimate}")
 
         elif opcion == "13":
-            print("\nCálculo de media de la distribución muestral de la proporción:")
+            print("\nCálculo de la media de la distribución muestral de la proporción:")
             p = float(input("Ingrese la proporción de la población (p): "))
             n = int(input("Ingrese el tamaño de la muestra (n): "))
 
-            sample_proportion_mean_value = sample_proportion_mean(p, n)
+            mean = sample_proportion_mean(p, n)
 
-            print(f"\nLa media de la distribución muestral de la proporción es: {sample_proportion_mean_value}")
+            print(f"\nLa media de la distribución muestral de la proporción es: {mean}")
 
         elif opcion == "14":
             print("\nCálculo del error estándar de la proporción:")
@@ -411,19 +388,19 @@ def main():
 
         elif opcion == "15":
             print("\nCálculo del error estándar estimado de la media de una población infinita:")
-            sigma = float(input("Ingrese la desviación estándar de la población (sigma): "))
+            sigma = float(input("Ingrese la desviación estándar de la población (σ): "))
             n = int(input("Ingrese el tamaño de la muestra (n): "))
 
-            standard_error_population_infinite = population_infinite_std_dev(sigma, n)
+            standard_error = population_infinite_std_dev(sigma, n)
 
-            print(f"\nEl error estándar estimado de la media de una población infinita es: {standard_error_population_infinite}")
+            print(f"\nEl error estándar estimado de la media de una población infinita es: {standard_error}")
 
         elif opcion == "16":
-            print("¡Hasta luego!")
+            print("Saliendo del programa.")
             break
 
         else:
-            print("Opción inválida. Por favor, seleccione una opción válida.")
+            print("Opción no válida. Por favor, seleccione una opción del menú.")
 
 if __name__ == "__main__":
     main()
