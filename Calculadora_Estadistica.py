@@ -18,21 +18,21 @@ class CalculatorApp:
         ttk.Label(self.main_frame, text="Seleccione una opción:").grid(row=0, column=0, columnspan=2)
 
         options = [
-            "1. Calcular coeficiente binomial y probabilidad(Cap5)",
-            "2. Calcular media de distribución binomial(Cap5)",
-            "3. Calcular desviación estándar de distribución binomial(Cap5)",
-            "4. Calcular probabilidad de distribución de Poisson(Cap5)",
-            "5. Calcular aproximación binomial por Poisson(Cap5)",
-            "6. Calcular estandarización de variable aleatoria normal(Cap5)",
-            "7. Calcular error estándar para poblaciones infinitas(Cap6)",
-            "8. Calcular error estándar para poblaciones finitas(Cap6)",
-            "9. Calcular estandarización de media de la muestra(Cap6)",
-            "10.Calcular multiplicador de población finita(Cap6)",
-            "11.Calcular estimación de desviación estándar de población(Cap6)",
-            "12.Calcular estimación de error estándar para poblaciones finitas(Cap7)",
-            "13.Calcular media de distribución muestral de la proporción(Cap7)",
-            "14.Calcular error estándar de la proporción(Cap7)",
-            "15.Calcular error estándar estimado de la media de una población infinita(Cap7)",
+            "Calcular coeficiente binomial y probabilidad",
+            "Calcular media de distribución binomial",
+            "Calcular desviación estándar de distribución binomial",
+            "Calcular probabilidad de distribución de Poisson",
+            "Calcular aproximación binomial por Poisson",
+            "Calcular estandarización de variable aleatoria normal",
+            "Calcular error estándar para poblaciones infinitas",
+            "Calcular error estándar para poblaciones finitas",
+            "Calcular estandarización de media de la muestra",
+            "Calcular multiplicador de población finita",
+            "Calcular estimación de desviación estándar de población",
+            "Calcular estimación de error estándar para poblaciones finitas",
+            "Calcular media de distribución muestral de la proporción",
+            "Calcular error estándar de la proporción",
+            "Calcular error estándar estimado de la media de una población infinita",
             "Salir"
         ]
 
@@ -83,14 +83,13 @@ class CalculatorApp:
 
     def calculate_binomial_coefficient_and_probability(self):
         n = int(self.get_input("Ingrese el número total de ensayos (n):"))
-        k = int(self.get_input("Ingrese el número de éxitos deseados (k):"))
+        k = float(self.get_input("Ingrese el número de éxitos deseados (k):"))
         p = float(self.get_input("Ingrese la probabilidad de éxito en cada ensayo (p):"))
 
         binomial_coefficient, probability = binomial_formula(n, k, p)
 
         messagebox.showinfo("Resultado", f"Coeficiente binomial C({n}, {k}): {binomial_coefficient}\n"
-                                        f"Probabilidad de obtener {k} éxitos en {n} ensayos: {probability}")
-
+                                          f"Probabilidad de obtener {k} éxitos en {n} ensayos: {probability}")
 
     def calculate_binomial_mean(self):
         n = int(self.get_input("Ingrese el número total de ensayos (n):"))
@@ -136,7 +135,7 @@ class CalculatorApp:
         probability = poisson_probability(k, lambd)
 
         messagebox.showinfo("Resultado", f"La probabilidad de la distribución de Poisson para {k} eventos es: {probability}")
-
+        
     def calculate_poisson_approximation(self):
         n = int(self.get_input("Ingrese el número total de ensayos (n):"))
         p = float(self.get_input("Ingrese la probabilidad de éxito en cada ensayo (p):"))
@@ -176,7 +175,6 @@ class CalculatorApp:
         plt.show()
 
         messagebox.showinfo("Resultado", f"El valor estandarizado es: {standardized_value}")
-
 
     def calculate_population_infinite_std_dev(self):
         n = int(self.get_input("Ingrese el tamaño de la muestra (n):"))
