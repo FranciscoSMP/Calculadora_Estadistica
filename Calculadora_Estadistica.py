@@ -5,10 +5,10 @@ import numpy as np
 import math
 from scipy import stats
 
-class CalculatorApp:
+class CalculadoraApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Calculator App")
+        self.root.title("Calculadora Estadística")
 
         self.main_frame = ttk.Frame(self.root, padding="20")
         self.main_frame.grid(row=0, column=0)
@@ -19,6 +19,8 @@ class CalculatorApp:
         ttk.Label(self.main_frame, text="Seleccione una opción:").grid(row=0, column=0, columnspan=2)
 
         options = [
+            "Calcular media aritmética",
+            "Calcular la mediana",
             "Calcular coeficiente binomial y probabilidad",
             "Calcular media de distribución binomial",
             "Calcular desviación estándar de distribución binomial",
@@ -36,9 +38,7 @@ class CalculatorApp:
             "Calcular error estándar estimado de la media de una población infinita",
             "Prueba de hipótesis para proporciones: muestras grandes Pruebas de dos colas para proporciones",
             "Calcular ecuación para una línea recta",
-            "Calcular media aritmética",
             "Calcular media aritmética de datos agrupados",
-            "Calcular la mediana",
             "Calcular mediana de datos agrupados",
             "Calcular moda de datos agrupados",
             "Calcular desviación estándar de la población",
@@ -613,7 +613,7 @@ def get_input(self, message):
 
 def main():
     root = tk.Tk()
-    app = CalculatorApp(root)
+    app = CalculadoraApp(root)
     root.mainloop()
 
 if __name__ == "__main__":
