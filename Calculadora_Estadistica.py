@@ -35,6 +35,7 @@ class CalculatorApp:
             "Calcular error estándar de la proporción",
             "Calcular error estándar estimado de la media de una población infinita",
             "Prueba de hipótesis para proporciones: muestras grandes Pruebas de dos colas para proporciones",
+            "Calcular ecuación para una línea recta",
             "Salir"
         ]
 
@@ -81,7 +82,9 @@ class CalculatorApp:
         elif option == "Calcular error estándar estimado de la media de una población infinita":
             self.calculate_population_infinite_std_dev()
         elif option == "Prueba de hipótesis para proporciones: muestras grandes Pruebas de dos colas para proporciones":
-            self.calculate_large_sample_proportion_test()  
+            self.calculate_large_sample_proportion_test()
+        elif option == "Calcular ecuación para una línea recta":
+            self.calculate_regression_estimation()  
         else:
             messagebox.showerror("Error", "Opción no implementada aún")
 
@@ -274,11 +277,11 @@ class CalculatorApp:
             # Sombrear áreas de rechazo
             x_fill_right = np.linspace(z_score, 4, 100)
             y_fill_right = stats.norm.pdf(x_fill_right, 0, 1)
-            plt.fill_between(x_fill_right, y_fill_right, color='red', alpha=0.5, label='Área de rechazo')
+            plt.fill_between(x_fill_right, y_fill_right, color='white', alpha=0.5, label='Área de rechazo')
 
             x_fill_left = np.linspace(-4, -z_score, 100)
             y_fill_left = stats.norm.pdf(x_fill_left, 0, 1)
-            plt.fill_between(x_fill_left, y_fill_left, color='red', alpha=0.5)
+            plt.fill_between(x_fill_left, y_fill_left, color='white', alpha=0.5)
         else:
             # Sombrear el área no de rechazo
             x_fill = np.linspace(-z_score, z_score, 100)
@@ -295,6 +298,37 @@ class CalculatorApp:
         result_message += "Se rechaza la hipótesis nula" if reject_null else "No se rechaza la hipótesis nula"
 
         messagebox.showinfo("Resultado", result_message)
+    
+    def calculate_regression_estimation(self):
+        x_values_str = self.get_input("Ingrese los valores de X separados por coma:")
+        y_values_str = self.get_input("Ingrese los valores de Y separados por coma:")
+
+        try:
+            x_values = np.array([float(x.strip()) for x in x_values_str.split(',')])
+            y_values = np.array([float(y.strip()) for y in y_values_str.split(',')])
+
+            slope, intercept, r_value, p_value, std_err = stats.linregress(x_values, y_values)
+
+            # Graficar la dispersión y la línea de regresión
+            plt.figure(figsize=(10, 6))
+            plt.scatter(x_values, y_values, label='Datos')
+            plt.plot(x_values, slope * x_values + intercept, color='red', label='Recta de regresión')
+            
+            # Añadir el texto con la ecuación de la línea recta
+            equation_text = f'Ecuación: Y = {slope:.4f}X + {intercept:.4f}'
+            plt.text(0.05, 0.95, equation_text, transform=plt.gca().transAxes,
+                    fontsize=12, verticalalignment='top', bbox=dict(facecolor='white', alpha=0.5))
+
+            plt.xlabel('X')
+            plt.ylabel('Y')
+            plt.title('Estimación mediante la recta de regresión')
+            plt.legend()
+            plt.show()
+
+            # Mostrar los resultados en una ventana de información
+            messagebox.showinfo("Resultado", f"Ecuación de la línea recta:\nY = {slope:.4f}X + {intercept:.4f}")
+        except Exception as e:
+            messagebox.showerror("Error", "Ocurrió un error al calcular la regresión lineal. Asegúrate de ingresar datos válidos.")
 
     def get_input(self, message):
         return simpledialog.askstring("Input", message)
@@ -353,6 +387,9 @@ def large_sample_proportion_test(p0, p_hat, n):
         p_value = 2 * (1 - stats.norm.cdf(abs(z_score)))
         reject_null = p_value < 0.05
         return z_score, p_value, reject_null
+
+def get_input(self, message):
+    return simpledialog.askstring("Input", message)
 
 def main():
     root = tk.Tk()
