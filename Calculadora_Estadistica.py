@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox, simpledialog
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+from scipy import stats
 
 class CalculatorApp:
     def __init__(self, root):
@@ -33,6 +34,7 @@ class CalculatorApp:
             "Calcular media de distribución muestral de la proporción",
             "Calcular error estándar de la proporción",
             "Calcular error estándar estimado de la media de una población infinita",
+            "Prueba de hipótesis para proporciones: muestras grandes Pruebas de dos colas para proporciones",
             "Salir"
         ]
 
@@ -43,7 +45,7 @@ class CalculatorApp:
         self.option_menu.grid(row=1, column=0, columnspan=2, pady=10)
 
         ttk.Button(self.main_frame, text="Calcular", command=self.calculate).grid(row=2, column=0, columnspan=2, pady=10)
-
+    
     def calculate(self):
         option = self.option_var.get()
         if option == "Salir":
@@ -78,12 +80,14 @@ class CalculatorApp:
             self.calculate_sample_proportion_standard_error()
         elif option == "Calcular error estándar estimado de la media de una población infinita":
             self.calculate_population_infinite_std_dev()
+        elif option == "Prueba de hipótesis para proporciones: muestras grandes Pruebas de dos colas para proporciones":
+            self.calculate_large_sample_proportion_test()  
         else:
             messagebox.showerror("Error", "Opción no implementada aún")
 
     def calculate_binomial_coefficient_and_probability(self):
         n = int(self.get_input("Ingrese el número total de ensayos (n):"))
-        k = float(self.get_input("Ingrese el número de éxitos deseados (k):"))
+        k = int(self.get_input("Ingrese el número de éxitos deseados (k):"))
         p = float(self.get_input("Ingrese la probabilidad de éxito en cada ensayo (p):"))
 
         binomial_coefficient, probability = binomial_formula(n, k, p)
@@ -244,6 +248,54 @@ class CalculatorApp:
 
         messagebox.showinfo("Resultado", f"El error estándar de la proporción es: {std_error}")
 
+    def calculate_large_sample_proportion_test(self):
+        p0 = float(self.get_input("Ingrese la proporción esperada bajo la hipótesis nula (p0):"))
+        p_hat = float(self.get_input("Ingrese la proporción observada en la muestra (p̂):"))
+        n = int(self.get_input("Ingrese el tamaño de la muestra (n):"))
+
+        z_score, p_value, reject_null = large_sample_proportion_test(p0, p_hat, n)
+
+        # Generar la gráfica de la curva normal y sombrear el área bajo la curva
+        plt.figure(figsize=(10, 6))
+        plt.title('Prueba de hipótesis para proporciones: muestras grandes')
+        plt.xlabel('Valor Z')
+        plt.ylabel('Densidad de probabilidad')
+        plt.grid(True)
+
+        # Datos para la gráfica de la distribución normal
+        x_values = np.linspace(-4, 4, 1000)
+        normal_probabilities = stats.norm.pdf(x_values, 0, 1)
+
+        # Gráfico de la curva normal estándar
+        plt.plot(x_values, normal_probabilities, color='blue', label='Distribución Normal Estándar')
+
+        # Sombrear el área bajo la curva para el valor Z calculado
+        if reject_null:
+            # Sombrear áreas de rechazo
+            x_fill_right = np.linspace(z_score, 4, 100)
+            y_fill_right = stats.norm.pdf(x_fill_right, 0, 1)
+            plt.fill_between(x_fill_right, y_fill_right, color='red', alpha=0.5, label='Área de rechazo')
+
+            x_fill_left = np.linspace(-4, -z_score, 100)
+            y_fill_left = stats.norm.pdf(x_fill_left, 0, 1)
+            plt.fill_between(x_fill_left, y_fill_left, color='red', alpha=0.5)
+        else:
+            # Sombrear el área no de rechazo
+            x_fill = np.linspace(-z_score, z_score, 100)
+            y_fill = stats.norm.pdf(x_fill, 0, 1)
+            plt.fill_between(x_fill, y_fill, color='green', alpha=0.5, label='Área de no rechazo')
+
+        plt.axvline(x=z_score, color='red', linestyle='--', label=f'Z = {z_score:.2f}')
+        plt.axvline(x=-z_score, color='red', linestyle='--')
+
+        plt.legend()
+        plt.show()
+
+        result_message = f"Valor Z: {z_score}\nP-valor: {p_value}\n"
+        result_message += "Se rechaza la hipótesis nula" if reject_null else "No se rechaza la hipótesis nula"
+
+        messagebox.showinfo("Resultado", result_message)
+
     def get_input(self, message):
         return simpledialog.askstring("Input", message)
 
@@ -294,6 +346,13 @@ def sample_proportion_standard_error(p, n):
 
 def normal_distribution(x, mu, sigma):
     return (1 / (sigma * np.sqrt(2 * np.pi))) * np.exp(-((x - mu) ** 2) / (2 * sigma ** 2))
+
+def large_sample_proportion_test(p0, p_hat, n):
+        std_error = math.sqrt(p0 * (1 - p0) / n)
+        z_score = (p_hat - p0) / std_error
+        p_value = 2 * (1 - stats.norm.cdf(abs(z_score)))
+        reject_null = p_value < 0.05
+        return z_score, p_value, reject_null
 
 def main():
     root = tk.Tk()
