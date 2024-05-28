@@ -36,6 +36,16 @@ class CalculatorApp:
             "Calcular error estándar estimado de la media de una población infinita",
             "Prueba de hipótesis para proporciones: muestras grandes Pruebas de dos colas para proporciones",
             "Calcular ecuación para una línea recta",
+            "Calcular media aritmética",
+            "Calcular media aritmética de datos agrupados",
+            "Calcular la mediana",
+            "Calcular mediana de datos agrupados",
+            "Calcular moda de datos agrupados",
+            "Calcular desviación estándar de la población",
+            "Calcular cuartiles",
+            "Calcular desviación típica",
+            "Calcular varianza",
+            "Calcular coeficiente de variación",
             "Salir"
         ]
 
@@ -85,7 +95,28 @@ class CalculatorApp:
             self.calculate_large_sample_proportion_test()
         elif option == "Calcular ecuación para una línea recta":
             self.calculate_regression_estimation()  
-        else:
+        elif option == "Calcular media aritmética":
+            self.calculate_arithmetic_mean()
+        elif option == "Calcular media aritmética de datos agrupados":
+            self.calculate_grouped_data_mean()
+        elif option == "Calcular la mediana":
+            self.calculate_simple_median()
+        elif option == "Calcular mediana de datos agrupados":
+            self.calculate_grouped_data_median()
+        elif option == "Calcular moda de datos agrupados":
+            self.calculate_grouped_data_mode()
+        elif option == "Calcular desviación estándar de la población":
+            self.calculate_population_std_dev_with_plot()
+        elif option == "Calcular cuartiles":
+            self.calculate_quartiles()
+        elif option == "Calcular desviación típica":
+            self.calculate_standard_deviation()
+        elif option == "Calcular varianza":
+            self.calculate_variance()
+        elif option == "Calcular coeficiente de variación":
+            self.calculate_coefficient_of_variation()
+
+        else:   
             messagebox.showerror("Error", "Opción no implementada aún")
 
     def calculate_binomial_coefficient_and_probability(self):
@@ -329,6 +360,195 @@ class CalculatorApp:
             messagebox.showinfo("Resultado", f"Ecuación de la línea recta:\nY = {slope:.4f}X + {intercept:.4f}")
         except Exception as e:
             messagebox.showerror("Error", "Ocurrió un error al calcular la regresión lineal. Asegúrate de ingresar datos válidos.")
+
+    def calculate_arithmetic_mean(self):
+        numbers_str = self.get_input("Ingrese los números separados por coma:")
+        
+        try:
+            numbers = [float(num.strip()) for num in numbers_str.split(',')]
+            mean = sum(numbers) / len(numbers)
+            messagebox.showinfo("Resultado", f"La media aritmética es: {mean}")
+        except ValueError:
+            messagebox.showerror("Error", "Por favor, ingrese una lista de números válidos separados por comas.")
+
+    def calculate_grouped_data_mean(self):
+        class_intervals_str = self.get_input("Ingrese los intervalos de clase (ej. 0-10, 11-20, ...):")
+        frequencies_str = self.get_input("Ingrese las frecuencias correspondientes (ej. 5, 15, ...):")
+
+        try:
+            class_intervals = [tuple(map(float, interval.split('-'))) for interval in class_intervals_str.split(',')]
+            frequencies = list(map(float, frequencies_str.split(',')))
+
+            if len(class_intervals) != len(frequencies):
+                raise ValueError("El número de intervalos de clase y frecuencias no coincide.")
+
+            midpoints = [(interval[0] + interval[1]) / 2 for interval in class_intervals]
+            total_frequency = sum(frequencies)
+            mean = sum(f * m for f, m in zip(frequencies, midpoints)) / total_frequency
+
+            messagebox.showinfo("Resultado", f"La media aritmética de los datos agrupados es: {mean}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un error: {str(e)}")
+
+    def calculate_simple_median(self):
+        data = self.get_input("Ingrese los datos separados por comas (e.g. 1,2,3,4,5):")
+        
+        try:
+            data = sorted(list(map(float, data.split(','))))
+
+            n = len(data)
+            if n == 0:
+                raise ValueError("No se ingresaron datos.")
+            
+            if n % 2 == 1:
+                median = data[n // 2]
+            else:
+                median = (data[n // 2 - 1] + data[n // 2]) / 2
+            
+            messagebox.showinfo("Resultado", f"La mediana es: {median}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un error: {str(e)}")
+
+    def calculate_grouped_data_median(self):
+        class_intervals = self.get_input("Ingrese los intervalos de clase (e.g. 10-20,20-30):")
+        frequencies = self.get_input("Ingrese las frecuencias correspondientes (e.g. 5,10):")
+
+        try:
+            class_intervals = [list(map(float, interval.split('-'))) for interval in class_intervals.split(',')]
+            frequencies = list(map(float, frequencies.split(',')))
+
+            if len(class_intervals) != len(frequencies):
+                raise ValueError("El número de intervalos de clase y las frecuencias no coincide.")
+
+            total_freq = sum(frequencies)
+            cumulative_frequencies = np.cumsum(frequencies)
+            median_class_index = np.where(cumulative_frequencies >= total_freq / 2)[0][0]
+
+            L = class_intervals[median_class_index][0]
+            F = cumulative_frequencies[median_class_index - 1] if median_class_index > 0 else 0
+            f = frequencies[median_class_index]
+            h = class_intervals[median_class_index][1] - class_intervals[median_class_index][0]
+
+            median = L + ((total_freq / 2 - F) / f) * h
+
+            messagebox.showinfo("Resultado", f"La mediana de los datos agrupados es: {median}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un error: {str(e)}")
+    
+    def calculate_grouped_data_mode(self):
+        class_intervals = self.get_input("Ingrese los intervalos de clase (e.g. 10-20,20-30):")
+        frequencies = self.get_input("Ingrese las frecuencias correspondientes (e.g. 5,10):")
+
+        try:
+            class_intervals = [list(map(float, interval.split('-'))) for interval in class_intervals.split(',')]
+            frequencies = list(map(float, frequencies.split(',')))
+
+            if len(class_intervals) != len(frequencies):
+                raise ValueError("El número de intervalos de clase y las frecuencias no coincide.")
+            
+            modal_class_index = np.argmax(frequencies)
+            L = class_intervals[modal_class_index][0]
+            f1 = frequencies[modal_class_index]
+            f0 = frequencies[modal_class_index - 1] if modal_class_index > 0 else 0
+            f2 = frequencies[modal_class_index + 1] if modal_class_index < len(frequencies) - 1 else 0
+            h = class_intervals[modal_class_index][1] - class_intervals[modal_class_index][0]
+
+            mode = L + ((f1 - f0) / ((f1 - f0) + (f1 - f2))) * h
+
+            messagebox.showinfo("Resultado", f"La moda de los datos agrupados es: {mode}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un error: {str(e)}")
+
+    def calculate_population_std_dev_with_plot(self):
+        data = simpledialog.askstring("Input", "Ingrese los datos de la población separados por comas:")
+        data = [float(x.strip()) for x in data.split(",")]
+
+        # Calcular desviación estándar
+        std_dev = np.std(data, ddof=0)  # ddof=0 para calcular la desviación estándar de la población
+
+        # Graficar la curva gaussiana
+        plt.figure(figsize=(8, 6))
+        plt.title('Distribución Normal de la Población')
+        plt.xlabel('Valor')
+        plt.ylabel('Densidad')
+        plt.grid(True)
+
+        # Datos para la gráfica
+        x = np.linspace(min(data) - 3 * std_dev, max(data) + 3 * std_dev, 1000)
+        y = stats.norm.pdf(x, np.mean(data), std_dev)
+
+        # Curva de densidad normal
+        plt.plot(x, y, 'r', linewidth=2, label='Distribución Normal')
+
+        # Área sombreada para una desviación estándar
+        plt.fill_between(x, y, 0, where=(x >= np.mean(data) - std_dev) & (x <= np.mean(data) + std_dev),
+                         color='gray', alpha=0.3, label='Desviación Estándar')
+
+        # Mostrar desviación estándar en la gráfica
+        plt.axvline(np.mean(data), color='k', linestyle='dashed', linewidth=1)
+        min_ylim, max_ylim = plt.ylim()
+        plt.text(np.mean(data) * 1.1, max_ylim * 0.9, 'Desviación estándar: {:.2f}'.format(std_dev))
+
+        plt.legend()
+        plt.show()
+
+    def calculate_quartiles(self):
+        data = simpledialog.askstring("Input", "Ingrese los datos separados por comas:")
+        data = [float(x.strip()) for x in data.split(",")]
+        data.sort()
+
+        # Calcular cuartiles
+        q1 = np.percentile(data, 25)
+        q2 = np.percentile(data, 50)  # Mediana
+        q3 = np.percentile(data, 75)
+
+        messagebox.showinfo("Cuartiles", f"Q1: {q1}\nQ2 (Mediana): {q2}\nQ3: {q3}")
+
+    def calculate_standard_deviation(self):
+        data_str = self.get_input("Ingrese los datos separados por coma:")
+        try:
+            data = [float(x.strip()) for x in data_str.split(',')]
+            mean = sum(data) / len(data)
+            variance = sum((x - mean) ** 2 for x in data) / len(data)
+            std_dev = math.sqrt(variance)
+
+            messagebox.showinfo("Resultado", f"La desviación típica de los datos es: {std_dev}")
+        except ValueError:
+            messagebox.showerror("Error", "Por favor, ingrese datos válidos.")
+
+    def calculate_variance(self):
+        data = simpledialog.askstring("Input", "Ingrese los datos separados por comas:")
+        data = [float(x.strip()) for x in data.split(",")]
+
+        # Calcular varianza
+        variance = np.var(data, ddof=0)  # ddof=0 para calcular la varianza de la población
+
+        messagebox.showinfo("Varianza", f"La varianza de la población es: {variance}")
+
+    def calculate_coefficient_of_variation(self):
+        data_str = self.get_input("Ingrese los datos separados por coma:")
+        try:
+            data = [float(x.strip()) for x in data_str.split(',')]
+            mean = sum(data) / len(data)
+            variance = sum((x - mean) ** 2 for x in data) / len(data)
+            std_dev = math.sqrt(variance)
+            cv = std_dev / mean
+
+            # Graficar la distribución de los datos, la desviación estándar y el coeficiente de variación
+            plt.figure(figsize=(10, 6))
+            plt.hist(data, bins=10, alpha=0.6, color='g', edgecolor='black')
+            plt.axvline(mean, color='r', linestyle='dashed', linewidth=1)
+            plt.axvline(mean + std_dev, color='b', linestyle='dashed', linewidth=1)
+            plt.axvline(mean - std_dev, color='b', linestyle='dashed', linewidth=1)
+            plt.title('Histograma de datos y desviación estándar')
+            plt.xlabel('Datos')
+            plt.ylabel('Frecuencia')
+            plt.grid(True)
+            plt.show()
+
+            messagebox.showinfo("Resultado", f"El coeficiente de variación de los datos es: {cv}")
+        except ValueError:
+            messagebox.showerror("Error", "Por favor, ingrese datos válidos.")
 
     def get_input(self, message):
         return simpledialog.askstring("Input", message)
