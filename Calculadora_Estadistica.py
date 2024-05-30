@@ -21,6 +21,14 @@ class CalculadoraApp:
         options = [
             "Calcular media aritmética",
             "Calcular la mediana",
+            "Calcular media aritmética de datos agrupados",
+            "Calcular mediana de datos agrupados",
+            "Calcular moda de datos agrupados",
+            "Calcular desviación estándar de la población",
+            "Calcular cuartiles",
+            "Calcular desviación típica",
+            "Calcular varianza",
+            "Calcular coeficiente de variación",
             "Calcular coeficiente binomial y probabilidad",
             "Calcular media de distribución binomial",
             "Calcular desviación estándar de distribución binomial",
@@ -38,14 +46,6 @@ class CalculadoraApp:
             "Calcular error estándar estimado de la media de una población infinita",
             "Prueba de hipótesis para proporciones: muestras grandes Pruebas de dos colas para proporciones",
             "Calcular ecuación para una línea recta",
-            "Calcular media aritmética de datos agrupados",
-            "Calcular mediana de datos agrupados",
-            "Calcular moda de datos agrupados",
-            "Calcular desviación estándar de la población",
-            "Calcular cuartiles",
-            "Calcular desviación típica",
-            "Calcular varianza",
-            "Calcular coeficiente de variación",
             "Salir"
         ]
 
