@@ -7,12 +7,11 @@ import math
 from scipy import stats
 import os
 
-
 class CalculadoraApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Calculadora Estadística")
-        self.root.geometry("800x800")  # Ajusta el tamaño de la ventana
+        self.root.geometry("400x500")  # Ajusta el tamaño de la ventana
 
         self.style = ttk.Style()
         self.style.configure('TFrame', background='#f0f0f0')
@@ -24,17 +23,17 @@ class CalculadoraApp:
     def create_menu(self):
         # Cargar y mostrar la imagen de fondo
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        image_path = os.path.join(script_dir, "Logo.jpg")
+        image_path = os.path.join(script_dir, "Logo.png")
         self.bg_image = Image.open(image_path)  # Reemplaza con la ruta a tu imagen
-        self.bg_image = self.bg_image.resize((800, 800), Image.Resampling.LANCZOS)  # Ajusta el tamaño si es necesario
+        self.bg_image = self.bg_image.resize((250, 250), Image.Resampling.LANCZOS)  # Ajusta el tamaño si es necesario
         self.bg_photo = ImageTk.PhotoImage(self.bg_image)
 
         self.bg_label = tk.Label(self.root, image=self.bg_photo)
-        self.bg_label.place(relx=0.5, rely=0.5, anchor="center")
+        self.bg_label.place(relx=0.5, rely=0.52, anchor="s")
 
         # Frame de contenido encima de la imagen
         self.content_frame = ttk.Frame(self.root, padding="20", style='TFrame')
-        self.content_frame.place(relx=0.5, rely=0.5, anchor="center")
+        self.content_frame.place(relx=0.5, rely=0.52, anchor="n")
 
         # Título
         title_label = ttk.Label(self.content_frame, text="Calculadora Estadística", font=("Arial", 16, "bold"), background="#4CAF50", foreground="white", padding=10)
