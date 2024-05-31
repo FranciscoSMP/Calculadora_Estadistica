@@ -61,6 +61,8 @@ class CalculadoraApp:
         option = self.option_var.get()
         if option == "Salir":
             self.root.destroy()
+        elif option == "Calcular media aritmética":
+            self.calculate_arithmetic_mean()
         elif option == "Calcular coeficiente binomial y probabilidad":
             self.calculate_binomial_coefficient_and_probability()
         elif option == "Calcular media de distribución binomial":
@@ -95,8 +97,6 @@ class CalculadoraApp:
             self.calculate_large_sample_proportion_test()
         elif option == "Calcular ecuación para una línea recta":
             self.calculate_regression_estimation()  
-        elif option == "Calcular media aritmética":
-            self.calculate_arithmetic_mean()
         elif option == "Calcular media aritmética de datos agrupados":
             self.calculate_grouped_data_mean()
         elif option == "Calcular la mediana":
@@ -368,6 +368,25 @@ class CalculadoraApp:
             numbers = [float(num.strip()) for num in numbers_str.split(',')]
             mean = sum(numbers) / len(numbers)
             messagebox.showinfo("Resultado", f"La media aritmética es: {mean}")
+
+            # Mapeo de los valores ingresados como etiquetas en el eje X
+            values = [str(num) for num in numbers]
+            bar_positions = np.arange(len(values))
+            bar_heights = numbers
+
+            fig, ax = plt.subplots(figsize=(10, 6))
+            ax.bar(bar_positions, bar_heights, align='center', alpha=0.7, color='skyblue', edgecolor='black')
+            ax.set_xticks(bar_positions)
+            ax.set_xticklabels(values)
+            ax.axhline(mean, color='red', linestyle='dashed', linewidth=1, label=f'Media: {mean:.2f}')
+            ax.set_xlabel('Valores Ingresados')
+            ax.set_ylabel('Valores')
+            ax.set_title('Histograma de Valores Ingresados')
+            ax.legend()
+            ax.grid(True)
+            
+            plt.show()
+
         except ValueError:
             messagebox.showerror("Error", "Por favor, ingrese una lista de números válidos separados por comas.")
 
