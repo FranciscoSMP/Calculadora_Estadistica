@@ -20,11 +20,12 @@ class CalculadoraApp:
 
         options = [
             "Calcular media aritmética",
-            "Calcular la mediana",
             "Calcular media aritmética de datos agrupados",
+            "Calcular la mediana",
             "Calcular mediana de datos agrupados",
-            "Calcular moda simple",
+            "Calcular moda",
             "Calcular moda de datos agrupados",
+            "Calcular rango",
             "Calcular desviación estándar de la población",
             "Calcular cuartiles",
             "Calcular desviación típica",
@@ -64,6 +65,8 @@ class CalculadoraApp:
             self.root.destroy()
         elif option == "Calcular media aritmética":
             self.calculate_arithmetic_mean()
+        elif option == "Calcular la mediana":
+            self.calculate_simple_median()
         elif option == "Calcular coeficiente binomial y probabilidad":
             self.calculate_binomial_coefficient_and_probability()
         elif option == "Calcular media de distribución binomial":
@@ -100,8 +103,6 @@ class CalculadoraApp:
             self.calculate_regression_estimation()  
         elif option == "Calcular media aritmética de datos agrupados":
             self.calculate_grouped_data_mean()
-        elif option == "Calcular la mediana":
-            self.calculate_simple_median()
         elif option == "Calcular mediana de datos agrupados":
             self.calculate_grouped_data_median()
         elif option == "Calcular moda de datos agrupados":
@@ -116,11 +117,93 @@ class CalculadoraApp:
             self.calculate_variance()
         elif option == "Calcular coeficiente de variación":
             self.calculate_coefficient_of_variation()
-        elif option == "Calcular moda simple":
+        elif option == "Calcular moda":
             self.calculate_simple_mode()
+        elif option == "Calcular rango":
+            self.calculate_range()
 
         else:   
             messagebox.showerror("Error", "Opción no implementada aún")
+
+    def calculate_range(self):
+        numbers_str = self.get_input("Ingrese los números separados por coma:")
+
+        try:
+            numbers = [float(num.strip()) for num in numbers_str.split(',')]
+            min_value = min(numbers)
+            max_value = max(numbers)
+            range_value = max_value - min_value
+            messagebox.showinfo("Resultado", f"El rango es: {range_value}")
+
+            # Mapeo de los valores ingresados como etiquetas en el eje X
+            values = [str(num) for num in numbers]
+            bar_positions = np.arange(len(values))
+            bar_heights = numbers
+
+            fig, ax = plt.subplots(figsize=(10, 6))
+            ax.bar(bar_positions, bar_heights, align='center', alpha=0.7, color='skyblue', edgecolor='black')
+            ax.set_xticks(bar_positions)
+            ax.set_xticklabels(values)
+            ax.axhline(min_value, color='green', linestyle='dashed', linewidth=1, label=f'Mínimo: {min_value:.2f}')
+            ax.axhline(max_value, color='blue', linestyle='dashed', linewidth=1, label=f'Máximo: {max_value:.2f}')
+            ax.set_xlabel('Valores Ingresados')
+            ax.set_ylabel('Valores')
+            ax.set_title('Histograma de Valores Ingresados')
+            ax.legend()
+            ax.grid(True)
+
+            plt.show()
+
+        except ValueError:
+            messagebox.showerror("Error", "Por favor, ingrese una lista de números válidos separados por comas.")
+    
+    def calculate_arithmetic_mean(self):
+        numbers_str = self.get_input("Ingrese los números separados por coma:")
+        
+        try:
+            numbers = [float(num.strip()) for num in numbers_str.split(',')]
+            mean = sum(numbers) / len(numbers)
+            messagebox.showinfo("Resultado", f"La media aritmética es: {mean}")
+
+            # Mapeo de los valores ingresados como etiquetas en el eje X
+            values = [str(num) for num in numbers]
+            bar_positions = np.arange(len(values))
+            bar_heights = numbers
+
+            fig, ax = plt.subplots(figsize=(10, 6))
+            ax.bar(bar_positions, bar_heights, align='center', alpha=0.7, color='skyblue', edgecolor='black')
+            ax.set_xticks(bar_positions)
+            ax.set_xticklabels(values)
+            ax.axhline(mean, color='red', linestyle='dashed', linewidth=1, label=f'Media: {mean:.2f}')
+            ax.set_xlabel('Valores Ingresados')
+            ax.set_ylabel('Valores')
+            ax.set_title('Histograma de Valores Ingresados')
+            ax.legend()
+            ax.grid(True)
+            
+            plt.show()
+
+        except ValueError:
+            messagebox.showerror("Error", "Por favor, ingrese una lista de números válidos separados por comas.")
+    
+    def calculate_simple_median(self):
+        data = self.get_input("Ingrese los datos separados por comas (e.g. 1,2,3,4,5):")
+        
+        try:
+            data = sorted(list(map(float, data.split(','))))
+
+            n = len(data)
+            if n == 0:
+                raise ValueError("No se ingresaron datos.")
+            
+            if n % 2 == 1:
+                median = data[n // 2]
+            else:
+                median = (data[n // 2 - 1] + data[n // 2]) / 2
+            
+            messagebox.showinfo("Resultado", f"La mediana es: {median}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un error: {str(e)}")
 
     def calculate_binomial_coefficient_and_probability(self):
         n = int(self.get_input("Ingrese el número total de ensayos (n):"))
@@ -364,35 +447,6 @@ class CalculadoraApp:
         except Exception as e:
             messagebox.showerror("Error", "Ocurrió un error al calcular la regresión lineal. Asegúrate de ingresar datos válidos.")
 
-    def calculate_arithmetic_mean(self):
-        numbers_str = self.get_input("Ingrese los números separados por coma:")
-        
-        try:
-            numbers = [float(num.strip()) for num in numbers_str.split(',')]
-            mean = sum(numbers) / len(numbers)
-            messagebox.showinfo("Resultado", f"La media aritmética es: {mean}")
-
-            # Mapeo de los valores ingresados como etiquetas en el eje X
-            values = [str(num) for num in numbers]
-            bar_positions = np.arange(len(values))
-            bar_heights = numbers
-
-            fig, ax = plt.subplots(figsize=(10, 6))
-            ax.bar(bar_positions, bar_heights, align='center', alpha=0.7, color='skyblue', edgecolor='black')
-            ax.set_xticks(bar_positions)
-            ax.set_xticklabels(values)
-            ax.axhline(mean, color='red', linestyle='dashed', linewidth=1, label=f'Media: {mean:.2f}')
-            ax.set_xlabel('Valores Ingresados')
-            ax.set_ylabel('Valores')
-            ax.set_title('Histograma de Valores Ingresados')
-            ax.legend()
-            ax.grid(True)
-            
-            plt.show()
-
-        except ValueError:
-            messagebox.showerror("Error", "Por favor, ingrese una lista de números válidos separados por comas.")
-
     def calculate_grouped_data_mean(self):
         class_intervals_str = self.get_input("Ingrese los intervalos de clase (ej. 0-10, 11-20, ...):")
         frequencies_str = self.get_input("Ingrese las frecuencias correspondientes (ej. 5, 15, ...):")
@@ -409,25 +463,6 @@ class CalculadoraApp:
             mean = sum(f * m for f, m in zip(frequencies, midpoints)) / total_frequency
 
             messagebox.showinfo("Resultado", f"La media aritmética de los datos agrupados es: {mean}")
-        except Exception as e:
-            messagebox.showerror("Error", f"Ocurrió un error: {str(e)}")
-
-    def calculate_simple_median(self):
-        data = self.get_input("Ingrese los datos separados por comas (e.g. 1,2,3,4,5):")
-        
-        try:
-            data = sorted(list(map(float, data.split(','))))
-
-            n = len(data)
-            if n == 0:
-                raise ValueError("No se ingresaron datos.")
-            
-            if n % 2 == 1:
-                median = data[n // 2]
-            else:
-                median = (data[n // 2 - 1] + data[n // 2]) / 2
-            
-            messagebox.showinfo("Resultado", f"La mediana es: {median}")
         except Exception as e:
             messagebox.showerror("Error", f"Ocurrió un error: {str(e)}")
 
