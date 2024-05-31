@@ -23,6 +23,7 @@ class CalculadoraApp:
             "Calcular la mediana",
             "Calcular media aritmética de datos agrupados",
             "Calcular mediana de datos agrupados",
+            "Calcular moda",
             "Calcular moda de datos agrupados",
             "Calcular desviación estándar de la población",
             "Calcular cuartiles",
@@ -115,6 +116,8 @@ class CalculadoraApp:
             self.calculate_variance()
         elif option == "Calcular coeficiente de variación":
             self.calculate_coefficient_of_variation()
+        elif option == "Calcular moda":
+            self.calculate_simple_mode()
 
         else:   
             messagebox.showerror("Error", "Opción no implementada aún")
@@ -568,6 +571,21 @@ class CalculadoraApp:
             messagebox.showinfo("Resultado", f"El coeficiente de variación de los datos es: {cv}")
         except ValueError:
             messagebox.showerror("Error", "Por favor, ingrese datos válidos.")
+
+    def calculate_simple_mode(data):
+        if len(data) == 0:
+            return None
+        counts = {}
+        for num in data:
+            if num in counts:
+                counts[num] += 1
+            else:
+                counts[num] = 1
+        max_count = max(counts.values())
+        mode = [num for num, count in counts.items() if count == max_count]
+        if len(mode) == len(data):
+            return None  # No mode if all values are equally frequent
+        return mode
 
     def get_input(self, message):
         return simpledialog.askstring("Input", message)
