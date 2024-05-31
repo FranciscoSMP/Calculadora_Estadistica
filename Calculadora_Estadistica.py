@@ -1,23 +1,50 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
+from PIL import Image, ImageTk
 import matplotlib.pyplot as plt
 import numpy as np
 import math
 from scipy import stats
+import os
+
 
 class CalculadoraApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Calculadora Estadística")
+        self.root.geometry("800x800")  # Ajusta el tamaño de la ventana
 
-        self.main_frame = ttk.Frame(self.root, padding="20")
-        self.main_frame.grid(row=0, column=0)
+        self.style = ttk.Style()
+        self.style.configure('TFrame', background='#f0f0f0')
+        self.style.configure('TLabel', background='#f0f0f0', font=("Arial", 12))
+        self.style.configure('TButton', font=("Arial", 10), padding=5)
 
         self.create_menu()
 
     def create_menu(self):
-        ttk.Label(self.main_frame, text="Seleccione una opción:").grid(row=0, column=0, columnspan=2)
+        # Cargar y mostrar la imagen de fondo
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        image_path = os.path.join(script_dir, "Logo.jpg")
+        self.bg_image = Image.open(image_path)  # Reemplaza con la ruta a tu imagen
+        self.bg_image = self.bg_image.resize((800, 800), Image.Resampling.LANCZOS)  # Ajusta el tamaño si es necesario
+        self.bg_photo = ImageTk.PhotoImage(self.bg_image)
 
+        self.bg_label = tk.Label(self.root, image=self.bg_photo)
+        self.bg_label.place(relx=0.5, rely=0.5, anchor="center")
+
+        # Frame de contenido encima de la imagen
+        self.content_frame = ttk.Frame(self.root, padding="20", style='TFrame')
+        self.content_frame.place(relx=0.5, rely=0.5, anchor="center")
+
+        # Título
+        title_label = ttk.Label(self.content_frame, text="Calculadora Estadística", font=("Arial", 16, "bold"), background="#4CAF50", foreground="white", padding=10)
+        title_label.grid(row=0, column=0, columnspan=2, pady=10, sticky="ew")
+
+        # Descripción
+        description_label = ttk.Label(self.content_frame, text="Seleccione una opción para calcular:", font=("Arial", 12), padding=10)
+        description_label.grid(row=1, column=0, columnspan=2, pady=5, sticky="ew")
+
+        # Opciones
         options = [
             "Calcular media aritmética",
             "Calcular media aritmética de datos agrupados",
@@ -54,11 +81,18 @@ class CalculadoraApp:
         self.option_var = tk.StringVar()
         self.option_var.set(options[0])
 
-        self.option_menu = ttk.OptionMenu(self.main_frame, self.option_var, options[0], *options)
-        self.option_menu.grid(row=1, column=0, columnspan=2, pady=10)
+        # Menú desplegable
+        self.option_menu = ttk.OptionMenu(self.content_frame, self.option_var, options[0], *options)
+        self.option_menu.grid(row=2, column=0, columnspan=2, pady=10, padx=10, sticky="ew")
 
-        ttk.Button(self.main_frame, text="Calcular", command=self.calculate).grid(row=2, column=0, columnspan=2, pady=10)
-    
+        # Botón de cálculo
+        calculate_button = ttk.Button(self.content_frame, text="Calcular", command=self.calculate, style="TButton")
+        calculate_button.grid(row=3, column=0, pady=10, padx=5, sticky="ew")
+
+        # Botón de salir
+        exit_button = ttk.Button(self.content_frame, text="Salir", command=self.root.quit, style="TButton")
+        exit_button.grid(row=3, column=1, pady=10, padx=5, sticky="ew")
+        
     def calculate(self):
         option = self.option_var.get()
         if option == "Salir":
