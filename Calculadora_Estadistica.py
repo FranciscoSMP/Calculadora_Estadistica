@@ -23,7 +23,7 @@ class CalculadoraApp:
             "Calcular la mediana",
             "Calcular media aritmética de datos agrupados",
             "Calcular mediana de datos agrupados",
-            "Calcular moda",
+            "Calcular moda simple",
             "Calcular moda de datos agrupados",
             "Calcular desviación estándar de la población",
             "Calcular cuartiles",
@@ -116,7 +116,7 @@ class CalculadoraApp:
             self.calculate_variance()
         elif option == "Calcular coeficiente de variación":
             self.calculate_coefficient_of_variation()
-        elif option == "Calcular moda":
+        elif option == "Calcular moda simple":
             self.calculate_simple_mode()
 
         else:   
@@ -572,21 +572,41 @@ class CalculadoraApp:
         except ValueError:
             messagebox.showerror("Error", "Por favor, ingrese datos válidos.")
 
-    def calculate_simple_mode(data):
-        if len(data) == 0:
-            return None
-        counts = {}
-        for num in data:
-            if num in counts:
-                counts[num] += 1
-            else:
-                counts[num] = 1
-        max_count = max(counts.values())
-        mode = [num for num, count in counts.items() if count == max_count]
-        if len(mode) == len(data):
-            return None  # No mode if all values are equally frequent
-        return mode
+    def calculate_simple_mode(self):
+        data = self.get_input("Ingrese los datos separados por comas (e.g. 1,2,3,4,5):")
+            
+        try:
+            data = [float(x.strip()) for x in data.split(',')]
+            freq_map = {}
 
+            for num in data:
+                if num in freq_map:
+                    freq_map[num] += 1
+                else:
+                    freq_map[num] = 1
+
+            max_freq = max(freq_map.values())
+            modes = [num for num, freq in freq_map.items() if freq == max_freq]
+
+            messagebox.showinfo("Resultado", f"La moda es: {modes}")
+
+            # Graficar los datos
+            plt.figure(figsize=(8, 6))
+            plt.hist(data, bins=len(set(data)), alpha=0.7, color='skyblue', edgecolor='black')
+            plt.title('Histograma de Datos')
+            plt.xlabel('Valores')
+            plt.ylabel('Frecuencia')
+            plt.grid(True)
+            
+            # Marcar las modas en la gráfica
+            for mode in modes:
+                plt.axvline(mode, color='red', linestyle='dashed', linewidth=1)
+
+            plt.show()
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un error: {str(e)}")
+    
     def get_input(self, message):
         return simpledialog.askstring("Input", message)
 
